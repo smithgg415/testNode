@@ -2,13 +2,14 @@ const readline = require('readline');
 const fs = require('fs');
 
 const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout
+    input: process.stdin,
+    output: process.stdout
 });
 
 let clientes = [];
 let diasHospedados = [];
 let valorDiaria = 0;
+let servicoQuarto = [];
 
 function carregarDados() {
     try {
@@ -60,6 +61,39 @@ function removerCliente() {
     });
 }
 
+function adicionarPedidoServicoQuarto() {
+    rl.question('Digite o nome do cliente para quem deseja adicionar um pedido de serviço de quarto: ', (nomeCliente) => {
+        rl.question('Digite o pedido de serviço de quarto: ', (pedido) => {
+            servicoQuarto.push({ cliente: nomeCliente, pedido: pedido });
+            console.log('Pedido de serviço de quarto adicionado com sucesso.');
+            processamentoDados();
+        });
+    });
+}
+
+function listarPedidosServicoQuarto() {
+    console.log("Lista de Pedidos de Serviço de Quarto:");
+    servicoQuarto.forEach((item, index) => {
+        console.log("-----------------------------");
+        console.log(`Cliente: ${item.cliente}`);
+        console.log(`Pedido: ${item.pedido}`);
+        console.log("-----------------------------");
+    });
+    processamentoDados();
+}
+
+function removerPedidoServicoQuarto() {
+    rl.question('Digite o índice do pedido de serviço de quarto que deseja remover: ', (indice) => {
+        if (!isNaN(parseInt(indice, 10)) && indice >= 0 && indice < servicoQuarto.length) {
+            servicoQuarto.splice(indice, 1);
+            console.log('Pedido de serviço de quarto removido com sucesso.');
+        } else {
+            console.log('Índice inválido. Por favor, tente novamente.');
+        }
+        processamentoDados();
+    });
+}
+
 function processamentoDados() {
     if (clientes.length !== diasHospedados.length) {
         console.log("Erro: O número de clientes não corresponde ao número de dias de hospedagem.");
@@ -71,6 +105,7 @@ function processamentoDados() {
     for (let i = 0; i < clientes.length; i++) {
         const calculo = diasHospedados[i] * valorDiaria;
         total += calculo;
+        valorPago = calculo;
         console.log("-----------------------------");
         console.log(clientes[i]);
         console.log("Tipo de quarto: " + definirTipoQuarto(valorDiaria));
@@ -130,11 +165,17 @@ function definirTipoQuarto(valorDiaria) {
 
 carregarDados();
 
-rl.question('Escolha uma opção:\n1. Adicionar cliente\n2. Remover cliente\n', (opcao) => {
+rl.question('Escolha uma opção:\n1. Adicionar cliente\n2. Remover cliente\n3. Adicionar pedido de serviço de quarto\n4. Listar pedidos de serviço de quarto\n5. Remover pedido de serviço de quarto\n', (opcao) => {
     if (opcao === '1') {
         adicionarCliente();
     } else if (opcao === '2') {
         removerCliente();
+    } else if (opcao === '3') {
+        adicionarPedidoServicoQuarto();
+    } else if (opcao === '4') {
+        listarPedidosServicoQuarto();
+    } else if (opcao === '5') {
+        removerPedidoServicoQuarto();
     } else {
         console.log('Opção inválida.');
         rl.close();
